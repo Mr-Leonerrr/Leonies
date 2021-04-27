@@ -1,32 +1,46 @@
 {
-  "name": "leoncito-0.1",
-  "version": "1.2.2",
-  "description": "Discord bot equipped with the basics for moderation, fun and entertainment.",
+  "name": "leonies",
+  "version": "1.3.0",
+  "description": "Leonies is a Discord Music Bot equipped with the basics for moderation, fun and entertainment built with [discord.js](https://discord.js.org/#/docs/)",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Mr-Leonerrr/leoncito-bot.git"
+    "url": "git://github.com/Mr-Leonerrr/Leonies.git"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "leonerrr_",
-  "license": "ISC",
+  "author": "Mr-Leonerrr",
+  "license": "MIT",
   "dependencies": {
-    "@discordjs/opus": "^0.3.3",
-    "discord-player": "^3.0.3",
-    "discord-ytdl-core": "^5.0.0",
+    "@discordjs/opus": "^0.4.0",
+    "discord-ytdl-core": "^5.0.1",
     "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0",
+    "i18n": "^0.13.2",
+    "lyrics-finder": "^21.7.0",
     "megadb": "^3.4.0",
     "merge-options": "^3.0.4",
     "moment": "^2.29.1",
     "node-fetch": "^2.6.1",
-    "opusscript": "0.0.7",
-    "ytdl-core": "^4.4.5",
-    "ytpl": "^2.0.5",
+    "opusscript": "^0.0.8",
+    "simple-youtube-api": "^5.2.1",
+    "ytdl-core": "^4.5.0",
     "ytsearcher": "^1.2.3"
   },
   "engines": {
     "node": "14.x"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/Mr-Leonerrr/Leonies/issues"
+  },
+  "homepage": "https://github.com/Mr-Leonerrr/Leonies#readme",
+  "keywords": [
+    "discord-music-bot",
+    "discord",
+    "discordjs",
+    "discord-js",
+    "discord-bot",
+    "music-bot"
+  ]
 }
