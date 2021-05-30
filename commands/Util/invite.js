@@ -3,27 +3,28 @@ const { MessageEmbed: Embed } = require("discord.js");
 module.exports = {
   name: "invite",
   aliases: ["i", "in"],
-  description: "Invite Leoncito to your server or join the official server",
+  description: "Invite Leonies to your server or join the official server",
   group: "Utility",
   memberName: "Invite",
   cooldown: 2,
   callback: (message) => {
+    const { client } = message;
     message.channel.send(
       new Embed()
         .setTitle("Invitation")
-        .setThumbnail(message.client.user.displayAvatarURL({ dynamic: true }))
+        .setThumbnail(client.user.displayAvatarURL({ dynamic: true }))
         .setColor("RANDOM")
         .addFields(
           {
             name: "Invite Bot",
-            value: `[Click here](${message.client.invite})`,
+            value: `[Click here](${client.invite})`,
           },
           {
             name: "Official Server",
-            value: `[Click here](https://discord.gg/uJguFNpkWUw)`,
+            value: `[Click here](${client.config.support.invite})`,
           }
         )
-        .setFooter(message.client.ownerInfo)
+        .setFooter(`Developed by ${client.config.owner.name}`)
     );
   },
 };

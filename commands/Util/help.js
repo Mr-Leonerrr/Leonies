@@ -1,89 +1,81 @@
-const Discord = require("discord.js");
+const { MessageEmbed: Embed } = require("discord.js");
 const db = require("megadb");
 let prefix_db = new db.crearDB("prefixes");
-const { default_prefix } = require("../../config.json");
-const { LOCALE } = require("../../util/LeoncitoUtil");
-const i18n = require("i18n");
-
-i18n.setLocale(LOCALE);
 
 module.exports = {
   name: "help",
   aliases: ["command"],
-  description: i18n.__("help.description"),
+  description: "Get the list of available commands or information about a specific command.",
   group: "Utility",
   memberName: "Help",
   usage: "<command name>",
   cooldown: 5,
   callback: async (message, args) => {
-    const { commands } = message.client;
-    const adminCommands = [];
-    const musicCommands = [];
-    const serverCommands = [];
-    const utilCommands = [];
+    const { client, guild, channel } = message;
+    const funCommands = [],
+      guildCommands = [],
+      modCommands = [],
+      musicCommands = [],
+      utilCommands = [];
 
-    let prefix = prefix_db.has(message.guild.id)
-      ? await prefix_db.get(`${message.guild.id}.prefix`)
-      : default_prefix;
+    let prefix = prefix_db.has(guild.id)
+      ? await prefix_db.get(`${guild.id}.prefix`)
+      : client.config.prefix;
 
     /**
      * Commands
      */
 
     if (!args.length) {
-      commands.forEach((cmd) => {
-        if (cmd.group == "Admin") adminCommands.push(`\`${cmd.name}\``);
+      client.commands.forEach((cmd) => {
+        if (cmd.group == "Fun") funCommands.push(`\`${cmd.name}\``);
+        if (cmd.group == "Guild") guildCommands.push(`\`${cmd.name}\``);
+        if (cmd.group == "Moderation") modCommands.push(`\`${cmd.name}\``);
         if (cmd.group == "Music") musicCommands.push(`\`${cmd.name}\``);
         if (cmd.group == "Utility") utilCommands.push(`\`${cmd.name}\``);
       });
 
-      let commandsPage = new Discord.MessageEmbed()
-        .setTitle(i18n.__mf("help.embedTitle", { botname: message.client.user.username }))
-        .setDescription(i18n.__("help.embedDescription"))
+      let commandsPage = new Embed()
+        .setTitle(`${client.user.username} Help`)
+        .setDescription("List of all commands")
         .setThumbnail("https://mypass.ace-energy.co.th/asset/img/icon_helpdesk.png")
         .setColor(message.member.displayHexColor)
         .addFields(
-          { name: i18n.__("help.adminTitle"), value: adminCommands.join(", ") },
-          { name: i18n.__("help.musicTitle"), value: musicCommands.join(", ") },
-          { name: i18n.__("help.utilityTitle"), value: utilCommands.join(", ") }
+          { name: "🏠 Guild", value: guildCommands.join(", ") },
+          { name: "🎵 Music", value: musicCommands.join(", ") },
+          { name: "🔐 Moderation", value: modCommands.join(", ") },
+          { name: "🎱 Utility", value: utilCommands.join(", ") },
+          { name: "😵 Fun", value: funCommands.join(", ") }
         )
-        .setFooter(i18n.__mf("help.embedFooter", { prefix: prefix }));
+        .setFooter(`You can send ${prefix}help [command name] to get info on a specific command.`);
 
-      return message.channel.send(commandsPage);
+      return channel.send(commandsPage);
     }
     const name = args[0].toLowerCase();
     const command =
-      commands.get(name) || commands.find((cmd) => cmd.aliases && cmd.aliases.includes(name));
+      client.commands.get(name) ||
+      client.commands.find((cmd) => cmd.aliases && cmd.aliases.includes(name));
 
     if (!command) return message.reply("that's not a valid command!");
 
-    const cmdEmbed = new Discord.MessageEmbed()
-      .setTitle(i18n.__("commands.embedTitle"))
+    const cmdEmbed = new Embed()
+      .setTitle("Command Information")
       .setColor(message.member.displayHexColor);
 
-    cmdEmbed.addField(i18n.__("commands.nameField"), command.memberName, true);
+    cmdEmbed.addField("Name", command.memberName, true);
 
     if (command.aliases) {
-      cmdEmbed.addField(i18n.__("commands.aliasField"), `${command.aliases.join(", ")}`, true);
+      cmdEmbed.addField("Alias", `${command.aliases.join(", ")}`, true);
     }
-    cmdEmbed.addField(i18n.__("commands.groupField"), command.group, true);
-    if (command.description)
-      cmdEmbed.addField(i18n.__("commands.descriptionField"), `${command.description}`);
+    cmdEmbed.addField("Group", command.group, true);
+    if (command.description) cmdEmbed.addField("Description", `${command.description}`);
     if (command.usage) {
-      cmdEmbed.addField(
-        i18n.__("commands.usageField"),
-        `${prefix}${command.name} ${command.usage}`,
-        true
-      );
+      cmdEmbed.addField("Usage", `${prefix}${command.name} ${command.usage}`, true);
     }
     if (command.cooldown) {
-      cmdEmbed.addField(
-        i18n.__("commands.cooldownField"),
-        i18n.__mf("commands.cooldownInfo", { cooldown: command.cooldown || 3 }),
-        true
-      );
+      cmdEmbed.addField("Cooldown", `${command.cooldown || 3} second(s).`, true);
     }
 
-    return message.channel.send(cmdEmbed);
+    return channel.send(cmdEmbed);
   },
 };

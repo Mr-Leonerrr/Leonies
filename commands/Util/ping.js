@@ -1,3 +1,5 @@
+const { MessageEmbed: Embed } = require("discord.js");
+
 module.exports = {
   name: "ping",
   description: "Know the response time of the bot.",
@@ -6,9 +8,14 @@ module.exports = {
   cooldown: 5,
   callback: (message) => {
     message.channel.send(
-      `🏓Latency is ${Date.now() - message.createdTimestamp}ms. API Latency is ${Math.round(
-        message.client.ws.ping
-      )}ms`
+      new Embed()
+        .setTitle("🏓 Pong!")
+        .setDescription(
+          `📨 • Sending Messages: \`${
+            Date.now() - message.createdTimestamp
+          } ms\` \n📡 • Discord API: \`${Math.round(message.client.ws.ping)} ms\``
+        )
+        .setColor(message.member.displayHexColor)
     );
   },
 };

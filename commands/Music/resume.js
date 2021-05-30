@@ -1,33 +1,36 @@
+require("../../Features/ExtendMessage"); //Inline Reply
+const { MessageEmbed: Embed } = require("discord.js");
+
 module.exports = {
   name: "resume",
   aliases: ["r", "resume-song", "continue"],
   description: "Resume the current paused song.",
   group: "Music",
   memberName: "Resume",
-  cooldown: 5,
   guildOnly: true,
+  cooldown: 5,
   callback: (message) => {
-    const serverQueue = message.client.queue.get(message.guild.id);
-    const voiceChannel = message.member.voice.channel;
-    if (!voiceChannel)
-      return message.channel.send({
-        embed: {
-          title: "Really?",
-          description: "You're not in the voice channel!",
-          color: 16515072,
-        },
-      });
+    const { client, guild, member } = message;
+    const serverQueue = client.queue.get(guild.id);
+    const voiceChannel = member.voice.channel;
 
-    if (voiceChannel !== message.guild.me.voice.channel) {
-      return message.reply(
-        "⛔ You must be in the same voice channel as the bot's in order to use that!"
+    if (!voiceChannel) {
+      return message.inlineReply(
+        new Embed().setDescription("You need to join a voice channel first!").setColor("RED")
       );
     }
 
-    if (!serverQueue) return message.channel.send("There is no music currently playing!");
+    if (serverQueue && voiceChannel !== guild.me.voice.channel) {
+      return message
+        .inlineReply(`You must be in the same channel as ${client.user}`)
+        .catch((error) => console.error(error));
+    }
+
+    if (!serverQueue) return message.inlineReply("There is nothing playing.");
 
     if (serverQueue.connection.dispatcher.resumed)
-      return message.channel.send("The song is already playing!");
+      return message.inlineReply("The song is already playing!");
+
     message.react("▶");
     serverQueue.connection.dispatcher.resume();
   },

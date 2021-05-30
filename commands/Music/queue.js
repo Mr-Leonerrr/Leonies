@@ -1,95 +1,106 @@
+require("../../Features/ExtendMessage"); //Inline Reply
 const { MessageEmbed: Embed } = require("discord.js");
-const { LOCALE } = require("../../util/LeoncitoUtil");
-const i18n = require("i18n");
-
-i18n.setLocale(LOCALE);
 
 module.exports = {
   name: "queue",
-  description: "Show current playlist.",
   aliases: ["q"],
+  description: "Show current playlist.",
   group: "Music",
   memberName: "Queue",
-  cooldown: 3,
   guildOnly: true,
+  cooldown: 3,
   callback: async (message) => {
-    const serverQueue = message.client.queue.get(message.guild.id);
-
-    if (!message.member.voice.channel) {
-      return message.channel.send({
-        embed: {
-          title: "Really?",
-          description: "You are not in the voice channel!",
-          color: 16515072,
-        },
-      });
+    const { client, guild, channel, member } = message;
+    const serverQueue = client.queue.get(guild.id);
+    const voiceChannel = member.voice.channel;
+    if (!voiceChannel) {
+      return message.inlineReply(
+        new Embed().setDescription("You need to join a voice channel first!").setColor("RED")
+      );
     }
-    if (!serverQueue) return message.channel.send("There is no music currently playing!");
+
+    if (serverQueue && voiceChannel !== guild.me.voice.channel) {
+      return message
+        .inlineReply(`You must be in the same channel as ${client.user}`)
+        .catch((error) => console.error(error));
+    }
+
+    if (!serverQueue) return message.inlineReply("There is nothing playing.");
+
+    if (serverQueue.songs.length === 1) {
+      return message.inlineReply("`0` Songs waiting in the queue.");
+    }
 
     let currentPage = 0;
-    const embeds = generateQueueEmbed(serverQueue);
+    const embeds = generateQueueEmbed(serverQueue.songs);
 
-    const queueEmbed = await message.channel.send(
-      `Current page: ${currentPage + 1}/${embeds.length}`,
+    const queueEmbed = await channel.send(
+      `**Current Page - ${currentPage + 1}/${embeds.length}**`,
       embeds[currentPage]
     );
-    await queueEmbed.react("⬅️");
-    await queueEmbed.react("➡️");
+
+    if (embeds.length > 1) {
+      try {
+        await queueEmbed.react("⬅️");
+        await queueEmbed.react("⏹");
+        await queueEmbed.react("➡️");
+      } catch (error) {
+        console.error(error);
+        channel.send(error.message).catch((error) => console.error(error));
+      }
+    }
 
     const filter = (reaction, user) =>
-      ["⬅️", "➡️"].includes(reaction.emoji.name) && message.author.id === user.id;
-    const collector = queueEmbed.createReactionCollector(filter);
+      ["⬅️", "⏹", "➡️"].includes(reaction.emoji.name) && message.author.id === user.id;
+    const collector = queueEmbed.createReactionCollector(filter, { time: 60000 });
 
-    collector.on("collect", (reaction, user) => {
-      if (reaction.emoji.name == "➡️") {
-        if (currentPage < embeds.length - 1) {
-          currentPage += 1;
-          queueEmbed.edit(`Current page: ${currentPage + 1}/${embeds.length}`, embeds[currentPage]);
+    collector.on("collect", async (reaction, user) => {
+      try {
+        if (reaction.emoji.name === "➡️") {
+          if (currentPage < embeds.length - 1) {
+            currentPage++;
+            queueEmbed.edit(`Current Page - ${currentPage + 1}/${embeds.length}`, embeds[currentPage]);
+          }
+        } else if (reaction.emoji.name === "⬅️") {
+          if (currentPage !== 0) {
+            --currentPage;
+            queueEmbed.edit(`Current Page - ${currentPage + 1}/${embeds.length}`, embed[currentPage]);
+          }
+        } else {
+          collector.stop();
+          reaction.message.reactions.removeAll();
         }
-      } else if (reaction.emoji.name == "⬅️") {
-        if (currentPage !== 0) {
-          currentPage -= 1;
-          queueEmbed.edit(`Current page: ${currentPage + 1}/${embeds.length}`, embeds[currentPage]);
-        }
+        await reaction.users.remove(message.author.id);
+      } catch (error) {
+        console.error(error);
+        return channel.send(error.message).catch((error) => console.error(error));
       }
     });
-    function generateQueueEmbed(serverQueue) {
-      const embeds = [];
-      let songs = 11;
-      for (let i = 1; i < serverQueue.songs.length; i += 10) {
-        const current = serverQueue.songs.slice(i++, songs);
-        songs += 10;
-        let j = i - 1;
-        const info = current
-          .map((track) => `${++j}. [${track.title}](${track.url}) | \`${track.duration}\``)
-          .join("\n");
-
-        let hasLoop = "None";
-        if (serverQueue.loopall) hasLoop = "All";
-        if (serverQueue.loopone) hasLoop = "One";
-        let embed = new Embed()
-          .setTitle("Now Playing")
-          .setThumbnail(serverQueue.songs[0].thumbnail)
-          .setDescription(
-            i18n.__mf("queue.embedDescription", {
-              songTitle: serverQueue.songs[0].title,
-              songUrl: serverQueue.songs[0].url,
-              duration: serverQueue.songs[0].duration,
-              info: info,
-            })
-          )
-          .setColor("RANDOM")
-          .addFields(
-            {
-              name: "Entries",
-              value: `${serverQueue.songs.length} Songs`,
-              inline: true,
-            },
-            { name: "Loop", value: `${hasLoop}`, inline: true }
-          );
-        embeds.push(embed);
-      }
-      return embeds;
-    }
   },
 };
+
+function generateQueueEmbed(serverQueue) {
+  const embeds = [];
+  let songs = 11;
+
+  for (let i = 1; i < serverQueue.length; i += 10) {
+    const current = serverQueue.slice(i++, songs);
+    let j = i - 1;
+    songs += 10;
+
+    const info = current
+      .map((track) => `${++j}. [${track.fullTitle}](${track.url}) | \`${track.duration}\``)
+      .join("\n");
+
+    let embed = new Embed()
+      .setTitle("Songs Queue")
+      .setThumbnail(serverQueue[0].thumbnail)
+      .setDescription(
+        `**Current Song \n[${serverQueue[0].fullTitle}](${serverQueue[0].url})**\n\n${info}`
+      )
+      .setColor("RANDOM")
+      .addField("Entries", `${serverQueue.length} Songs`, true);
+    embeds.push(embed);
+  }
+  return embeds;
+}

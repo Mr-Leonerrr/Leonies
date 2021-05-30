@@ -1,4 +1,4 @@
-const Discord = require("discord.js");
+const { MessageEmbed: Embed } = require("discord.js");
 const moment = require("moment");
 
 const DEVICES = { web: "🌐", desktop: "💻", mobile: "📱" };
@@ -7,11 +7,14 @@ module.exports = {
   name: "userinfo",
   aliases: ["info", "ui"],
   description: "Get the info of tagged users or your own info.",
+  usage: "<@user> or none",
   group: "Utility",
   memberName: "User Info",
-  cooldown: 3,
   guildOnly: true,
-  callback: (message, args, client) => {
+  cooldown: 3,
+  callback: (message, args) => {
+    const { client, guild, channel, mentions } = message;
+    //Change the id of emoji depending on whether you have them on your server or somewhere else where the bot has joined.
     const BADGES = {
       DISCORD_EMPLOYEE: client.emojis.cache.get("811850574222983210"),
       DISCORD_PARTNER: client.emojis.cache.get("811850572109447168"),
@@ -19,7 +22,7 @@ module.exports = {
       HYPESQUAD_EVENTS: client.emojis.cache.get("811850570360029206"),
       HOUSE_BRAVERY: client.emojis.cache.get("811850572848037928"),
       HOUSE_BRILLIANCE: client.emojis.cache.get("811850573426065459"),
-      HOUSE_BALANCE: client.emojis.cache.get("811850570284924948"),
+      HOUSE_BALANCE: client.emojis.cache.get("836838607670739035"),
       EARLY_SUPPORTER: client.emojis.cache.get("811850613691645992"),
       VERIFIED_BOT: client.emojis.cache.get("811850620167782420"),
       VERIFIED_DEVELOPER: client.emojis.cache.get("811850572038012978"),
@@ -33,8 +36,7 @@ module.exports = {
       offline: client.emojis.cache.get("811465951978979328"),
     };
 
-    const member =
-      message.mentions.members.last() || message.guild.members.cache.get(args[0]) || message.member;
+    const member = mentions.members.last() || guild.members.cache.get(args[0]) || message.member;
 
     const trimArray = (arr, maxLen = 10) => {
       if (arr.length > maxLen) {
@@ -74,11 +76,14 @@ module.exports = {
     }
 
     if (member.user.presence.status == "online") status = "Online";
+    if (member.user.presence.status == "idle") status = "Idle";
     if (member.user.presence.status == "dnd") status = "DND";
     else titleCase(member.user.presence.status);
 
     if (!member.user.bot) {
-      userDevice = DEVICES[Object.keys(member.user.presence.clientStatus)[0]];
+      if (member.user.presence.status == "offline") {
+        userDevice = "";
+      } else userDevice = DEVICES[Object.keys(member.user.presence.clientStatus)[0]];
     } else if (member.user.bot) {
       userDevice = "";
     }
@@ -90,7 +95,7 @@ module.exports = {
       userInfo = "Yes";
     }
 
-    const emb = new Discord.MessageEmbed()
+    const emb = new Embed()
       .setAuthor(
         `${member.user.tag} ${userDevice}`,
         member.user.displayAvatarURL({ dynamic: true, size: 512 })
@@ -152,6 +157,6 @@ module.exports = {
           inline: false,
         }
       );
-    message.channel.send(emb);
+    channel.send(emb);
   },
 };

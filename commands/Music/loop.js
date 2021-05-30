@@ -1,38 +1,34 @@
+require("../../Features/ExtendMessage"); //Inline Reply
 const { MessageEmbed: Embed } = require("discord.js");
-const { LOCALE } = require("../../util/LeoncitoUtil");
-const i18n = require("i18n");
-
-i18n.setLocale(LOCALE);
 
 module.exports = {
   name: "loop",
-  description: i18n.__("loop.description"),
   aliases: ["lp"],
+  description: "Repeat the current song or queue.",
+  usage: "[all | one | off]",
   group: "Music",
   memberName: "Loop",
-  usage: "[all/one/off]",
-  cooldown: 3,
   guildOnly: true,
+  cooldown: 3,
   callback: (message, args) => {
-    const serverQueue = message.client.queue.get(message.guild.id);
-    const voiceChannel = message.member.voice.channel;
+    const { client, guild, member } = message;
+    const serverQueue = client.queue.get(guild.id);
+    const voiceChannel = member.voice.channel;
     if (!voiceChannel) {
-      return message.channel.send({
-        embed: {
-          title: "Really?",
-          description: "You are not in the voice channel!",
-          color: 16515072,
-        },
-      });
-    }
-    if (!message.guild.me.voice.channel) {
-      return message.reply("I'm not on a voice channel!");
-    }
-    if (voiceChannel != message.guild.me.voice.channel)
-      return message.reply(
-        `⛔ You must be in the same voice channel as the bot's in order to use that!`
+      return message.inlineReply(
+        new Embed().setDescription("You're not on a voice channel!").setColor("RED")
       );
-    if (!serverQueue) return message.channel.send("There is no music playing!");
+    }
+
+    if (serverQueue && voiceChannel !== guild.me.voice.channel) {
+      return message
+        .inlineReply(
+          new Embed().setDescription(`You must be in the same channel as ${client.user}`).setColor("RED")
+        )
+        .catch((error) => console.error(error));
+    }
+
+    if (!serverQueue) return message.inlineReply("There is no music playing!");
 
     if (!args.length) {
       serverQueue.loopall = !serverQueue.loopall;
@@ -41,7 +37,9 @@ module.exports = {
       if (serverQueue.loopall === true) {
         message.react("🔁");
       } else {
-        message.reply("Loop all has been `turned off!`");
+        message.inlineReply(
+          new Embed().setDescription("Loop all has been `turned off!`").setColor("ORANGE")
+        );
       }
     } else {
       switch (args[0].toLowerCase()) {
@@ -52,7 +50,9 @@ module.exports = {
           if (serverQueue.loopall === true) {
             message.react("🔁");
           } else {
-            message.reply("Loop all has been `turned off!`");
+            message.inlineReply(
+              new Embed().setDescription("Loop all has been `turned off!`").setColor("ORANGE")
+            );
           }
           break;
 
@@ -63,7 +63,9 @@ module.exports = {
           if (serverQueue.loopone === true) {
             message.react("🔂");
           } else {
-            message.reply("Loop one has been `turned off!`");
+            message.inlineReply(
+              new Embed().setDescription("Loop one has been `turned off!`").setColor("ORANGE")
+            );
           }
           break;
 
@@ -71,7 +73,9 @@ module.exports = {
           serverQueue.loopall = false;
           serverQueue.loopone = false;
 
-          message.channel.send("Loop has been `turned off`!");
+          message.channel.send(
+            new Embed().setDescription("Loop has been `turned off`!").setColor("ORANGE")
+          );
           break;
       }
     }

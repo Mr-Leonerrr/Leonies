@@ -1,67 +1,75 @@
+require("../../Features/ExtendMessage"); //Inline Reply
 const { MessageEmbed: Embed } = require("discord.js");
 const { play } = require("../../include/play");
+const { playlist } = require("../../include/playlist");
 const ytdl = require("discord-ytdl-core");
 const YoutubeAPI = require("simple-youtube-api");
-const { DEFAULT_VOLUME } = require("../../util/LeoncitoUtil");
 const youtube = new YoutubeAPI(process.env.YOUTUBE_API);
-const db = require("megadb");
-let prefix_db = new db.crearDB("prefixes");
-const { default_prefix } = require("../../config.json");
-const i18n = require("i18n");
-const timeFormat = require("../timeFormat");
+const { timeFormat, createQuery } = require("../../Features/musicFunctions");
 
 module.exports = {
   name: "play",
   aliases: ["p"],
-  description: i18n.__("play.description"),
+  description: "Plays audio from Youtube",
+  usage: "<name song | url | playlist url>",
   group: "Music",
   memberName: "Play",
-  usage: "<name song or url>",
   args: true,
-  cooldown: 3,
   guildOnly: true,
+  cooldown: 3,
   callback: async (message, args) => {
-    const serverQueue = message.client.queue.get(message.guild.id);
-    let prefix = prefix_db.has(message.guild.id)
-      ? await prefix_db.get(`${message.guild.id}.prefix`)
-      : default_prefix;
+    const { client, guild, channel, member } = message;
+    const serverQueue = client.queue.get(guild.id);
 
-    const voiceChannel = message.member.voice.channel;
-    if (!voiceChannel) return message.reply(i18n.__("play.errorNotChannel")).catch(console.error());
-
-    if (serverQueue && voiceChannel !== message.guild.me.voice.channel) {
-      return message
-        .reply(i18n.__("play.errorNotInSameChannel", { user: message.client.user }))
-        .catch(console.error());
-    }
-    if (message.member.voice.deaf) {
-      message.react("🔇");
-      return message.reply(
-        new Embed().setColor(16515072).setDescription("You can't run this command while deafened!")
+    const voiceChannel = member.voice.channel;
+    if (!voiceChannel) {
+      return message.inlineReply(
+        new Embed().setDescription("You need to join a voice channel first!").setColor("RED")
       );
     }
 
-    if (!args.length) {
-      return message.reply(i18n.__("play.usageReply", { prefix: prefix })).catch(console.error());
+    if (serverQueue && voiceChannel !== guild.me.voice.channel) {
+      return message
+        .inlineReply(`You must be in the same channel as ${message.client.user}`)
+        .catch((error) => console.error(error));
     }
 
-    const permissions = voiceChannel.permissionsFor(message.client.user);
-    if (!permissions.has("CONNECT")) return message.reply(i18n.__("play.missingPermissionConnect"));
-    if (!permissions.has("SPEAK")) return message.reply(i18n.__("play.missingPermissionSpeak"));
+    if (member.voice.deaf) {
+      message.react("🔇");
+      return message.inlineReply(
+        new Embed().setDescription("You can't run this command while deafened!").setColor("RED")
+      );
+    }
+
+    const permissions = voiceChannel.permissionsFor(client.user);
+    if (!permissions.has("CONNECT"))
+      return channel.inlineReply(
+        new Embed()
+          .setDescription(":x: I couldn't connect to the voice channel, missing permissions.")
+          .setColor("RED")
+      );
+    if (!permissions.has("SPEAK"))
+      return channel.inlineReply(
+        new Embed()
+          .setDescription(
+            ":x: I can't speak in this voice channel, make sure I've the proper permissions!"
+          )
+          .setColor("RED")
+      );
 
     const search = args.join(" ");
     const videoPattern = /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/gi;
     const playlistPattern = /^.*(list=)([^#\&\?]*).*/gi;
     const url = args[0];
-    const urlValid = videoPattern.test(args[0]);
+    const urlValid = videoPattern.test(url);
 
     //Playlist
-    if (!videoPattern.test(args[0]) && playlistPattern.test(args[0])) {
-      return message.client.commands.get("playlist").callback(message, args);
+    if (!videoPattern.test(url) && playlistPattern.test(url)) {
+      return playlist(message, args);
     }
 
     const queueConstructor = {
-      txtChannel: message.channel,
+      txtChannel: channel,
       voiceChannel,
       connection: null,
       songs: [],
@@ -77,33 +85,45 @@ module.exports = {
     if (urlValid) {
       try {
         songInfo = await ytdl.getInfo(url);
+        const getInfo = createQuery(songInfo.videoDetails.title);
+        let thumbnail;
+        if (songInfo.videoDetails.thumbnails[4] == undefined)
+          thumbnail = songInfo.videoDetails.thumbnails[3].url;
+        else thumbnail = songInfo.videoDetails.thumbnails[4].url;
         song = {
-          title: songInfo.videoDetails.title,
+          title: getInfo[1],
+          artist: getInfo[0],
+          fullTitle: songInfo.videoDetails.title,
           url: songInfo.videoDetails.video_url,
           duration: timeFormat(songInfo.videoDetails.lengthSeconds),
-          thumbnail: songInfo.videoDetails.thumbnails[3].url,
-          requestBy: message.member.user,
+          thumbnail: thumbnail,
+          requestBy: member.user,
         };
       } catch (error) {
         console.error(error);
-        return message.reply(error.message).catch(console.error);
+        return message.reply(error.message).catch((error) => console.error(error));
       }
     } else {
       try {
-        const results = await youtube.searchVideos(search, 1, {
-          part: "snippet",
-        });
+        const results = await youtube.searchVideos(search, 1, { part: "snippet" });
         songInfo = await ytdl.getInfo(results[0].url);
+        const getInfo = createQuery(songInfo.videoDetails.title);
+        let thumbnail;
+        if (songInfo.videoDetails.thumbnails[4] == undefined)
+          thumbnail = songInfo.videoDetails.thumbnails[3].url;
+        else thumbnail = songInfo.videoDetails.thumbnails[4].url;
         song = {
-          title: songInfo.videoDetails.title,
+          title: getInfo[1],
+          artist: getInfo[0],
+          fullTitle: songInfo.videoDetails.title,
           url: songInfo.videoDetails.video_url,
           duration: timeFormat(songInfo.videoDetails.lengthSeconds),
-          thumbnail: songInfo.videoDetails.thumbnails[3].url,
-          requestBy: message.member.user,
+          thumbnail: thumbnail,
+          requestBy: member.user,
         };
       } catch (error) {
         console.error(error);
-        return message.reply(error.message).catch(console.error());
+        return message.reply(error.message).catch((error) => console.error(error));
       }
     }
 
@@ -112,19 +132,16 @@ module.exports = {
       return serverQueue.txtChannel
         .send(
           new Embed()
-            .setDescription(
-              i18n.__mf("play.queueAdded", {
-                title: song.title,
-                author: song.requestBy,
-              })
-            )
-            .setColor("RANDOM")
+            .setDescription(`✅ **Queued** [${song.fullTitle}](${song.url})`)
+            .addField("Requested by", song.requestBy, true)
+            .setColor("GREEN")
+            .setFooter(`Queue position: ${serverQueue.songs.lastIndexOf(song) + 1}`)
         )
-        .catch(console.error());
+        .catch((error) => console.error(error));
     }
 
     queueConstructor.songs.push(song);
-    message.client.queue.set(message.guild.id, queueConstructor);
+    client.queue.set(guild.id, queueConstructor);
 
     try {
       queueConstructor.connection = await voiceChannel.join();
@@ -132,11 +149,13 @@ module.exports = {
       play(queueConstructor.songs[0], message);
     } catch (error) {
       console.error(error);
-      message.client.queue.delete(message.guild.id);
+      client.queue.delete(guild.id);
       await voiceChannel.leave();
-      return message.channel
-        .send(i18n.__("play.cantJoinChannel", { error: error }))
-        .catch(console.error());
+      return channel
+        .send(
+          new Embed().setDescription(`I Couldn't join to the voice channel: ${error}`).setColor("RED")
+        )
+        .catch((error) => console.error(error));
     }
   },
 };

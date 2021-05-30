@@ -1,7 +1,12 @@
 {
-  "default_prefix": ";",
-  "PRUNING": false,
-  "LOCALE": "en",
-  "STAY_TIME": 30,
-  "DEFAULT_VOLUME": 100
+  "prefix": ";",
+  "support": {
+    "invite": "server-invitation",
+    "id": "server-id",
+    "logs": "logs-channel-id"
+  },
+  "owner": {
+    "id": "user-id",
+    "name": "username#tag"
+  }
 }

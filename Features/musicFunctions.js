@@ -1,4 +1,6 @@
-module.exports = (duration) => {
+const getArtistTitle = require("get-artist-title");
+
+module.exports.timeFormat = (duration) => {
   let hrs = ~~(duration / 3600);
   let mins = ~~((duration % 3600) / 60);
   let secs = ~~duration % 60;
@@ -12,4 +14,11 @@ module.exports = (duration) => {
   ret += "" + mins + ":" + (secs < 10 ? "0" : "");
   ret += "" + secs;
   return ret;
+};
+
+module.exports.createQuery = (args) => {
+  const query = ([artist, title] = getArtistTitle(args, {
+    defaultArtist: " ",
+  }));
+  return query;
 };

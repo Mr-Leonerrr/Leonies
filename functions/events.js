@@ -1,6 +1,6 @@
 const fs = require("fs");
 const { join } = require("path");
-const eventDir = join(__dirname, "..", "events");
+const eventDir = join(__dirname, "..", "Events");
 
 module.exports.run = (client) => {
   const eventFiles = fs.readdirSync(eventDir);

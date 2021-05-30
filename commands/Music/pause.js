@@ -1,42 +1,35 @@
-const { LOCALE } = require("../../util/LeoncitoUtil");
-const i18n = require("i18n");
-
-i18n.setLocale(LOCALE);
+require("../../Features/ExtendMessage"); //Inline Reply
+const { MessageEmbed: Embed } = require("discord.js");
 
 module.exports = {
   name: "pause",
-  aliases: ["ps", "pause-song", "hold"],
-  description: i18n.__("pause.description"),
+  aliases: ["pause-song", "hold", "ps"],
+  description: "Pause the currently playing music.",
   group: "Music",
   memberName: "Pause",
-  cooldown: 3,
   guildOnly: true,
+  cooldown: 3,
   callback: (message) => {
-    const serverQueue = message.client.queue.get(message.guild.id);
-    const voiceChannel = message.member.voice.channel;
-    if (!voiceChannel)
-      return message.channel.send({
-        embed: {
-          title: "Really?",
-          description: "You're not in the voice channel!",
-          color: 16515072,
-        },
-      });
-
-    if (voiceChannel !== message.guild.me.voice.channel) {
-      return message.reply(
-        "⛔ You must be in the same voice channel as the bot's in order to use that!"
+    const { client, guild, member } = message;
+    const serverQueue = client.queue.get(guild.id);
+    const voiceChannel = member.voice.channel;
+    if (!voiceChannel) {
+      return message.inlineReply(
+        new Embed().setDescription("You're not on a voice channel!").setColor("RED")
       );
     }
 
-    if (!serverQueue) return message.channel.send(i18n.__mf("pause.errorNotQueue"));
+    if (serverQueue && voiceChannel !== guild.me.voice.channel) {
+      return message.inlineReply(
+        new Embed().setDescription(`You must be in the same channel as ${client.user}`).setColor("RED")
+      );
+    }
+
+    if (!serverQueue) return message.inlineReply("There is no music playing!");
 
     if (serverQueue.connection.dispatcher.paused)
-      return message.channel.send("The song is already paused");
-
-    if (message.member.voice.channel.id !== message.guild.me.voice.channel.id)
-      return message.reply(
-        `⛔ You must be in the same voice channel as the bot's in order to use that!`
+      return message.inlineReply(
+        new Embed().setDescription("The song is already paused").setColor("ORANGE")
       );
 
     message.react("⏸");

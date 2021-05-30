@@ -1,4 +1,3 @@
-const Discord = require("discord.js");
 const fs = require("fs");
 
 module.exports = {
@@ -7,7 +6,7 @@ module.exports = {
       if (error) console.log(error);
       let jsFiles = files.filter((fl) => fl.split(".").pop() === "js");
       if (jsFiles.length <= 0) {
-        console.log(`No commands to load in the folder: ${dirname.replace(/.\/commands\//gi, "")}`);
+        console.log(`No commands to load in the folder: ${dirName.replace(/.\/commands\//gi, "")}`);
         return;
       }
 
@@ -22,14 +21,5 @@ module.exports = {
           }
       });
     });
-  },
-
-  //EMBED SUCCESS & ERROR
-  errorEmbed: function (message, channel, args) {
-    channel.send(new Discord.MessageEmbed().setDescription(`📛 **Error:** ${args} 📛`).setColor("RED"));
-  },
-
-  successEmbed: function (message, channel, args) {
-    channel.send(new Discord.MessageEmbed().setDescription(`✅ **Success:** ${args}`).setColor("GREEN"));
   },
 };

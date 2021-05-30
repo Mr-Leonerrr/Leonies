@@ -1,37 +1,32 @@
-const Discord = require("discord.js");
-const i18n = require("i18n");
+const { MessageEmbed: Embed, Collection } = require("discord.js");
 const db = require("megadb");
 let prefix_db = new db.crearDB("prefixes");
-const { default_prefix } = require("../config.json");
-const { LOCALE } = require("../util/LeoncitoUtil");
-
-const cooldowns = new Discord.Collection();
 
 module.exports = async (client, message) => {
-  let prefix = prefix_db.has(message.guild.id)
-    ? await prefix_db.get(`${message.guild.id}.prefix`)
-    : default_prefix;
+  if (message.author.bot) return;
 
-  if (message.content === `<@!${client.user.id}>`) {
-    return message.channel.send(
-      new Discord.MessageEmbed()
+  const { guild, channel, content, author } = message;
+
+  let prefix = prefix_db.has(guild.id)
+    ? await prefix_db.get(`${guild.id}.prefix`)
+    : client.config.prefix;
+
+  if (content.trim() === `<@!${client.user.id}>` || content.trim() === `<@${client.user.id}>`) {
+    if (content.includes("@here") || content.includes("@everyone")) return;
+    return channel.send(
+      new Embed()
         .setTitle("Settings for this server")
         .setDescription(
-          `Prefix of this server: \`${prefix}\`
-          Server Region: \`${message.guild.region}\`
-          Server ID: \`${message.guild.id}\`
-
-          Type \`${prefix}help\` for the command list.
-          [Support](https://discord.gg/uJguFNpkWU) | [Invite](${client.invite})`
+          `Prefix of this server: \`${prefix}\` \nServer Region: \`${guild.region}\` \nServer ID: \`${guild.id}\` \nType \`${prefix}help\` for the command list. \n[Vote](url-for-vote) | [Support](${client.config.support.invite}) | [Invite](${client.invite})`
         )
         .setColor("#6A0CED")
-        .setFooter(client.ownerInfo)
+        .setFooter(`Developed by ${client.config.owner.name}`)
     );
   }
 
-  if (!message.content.startsWith(prefix) || message.author.bot) return;
+  if (!content.toLowerCase().startsWith(prefix)) return;
 
-  const args = message.content.slice(prefix.length).trim().split(/ +/);
+  const args = content.slice(prefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
 
   const command =
@@ -40,44 +35,49 @@ module.exports = async (client, message) => {
 
   if (!command) return;
 
-  if (command.guildOnly && message.channel.type === "dm") {
+  if (command.guildOnly && channel.type === "dm") {
     return message.reply("Can't run this command on private messages!");
   }
 
   if (command.args && !args.length) {
-    let reply = `You have not entered any arguments, ${message.author}!`;
+    let embed = new Embed()
+      .setDescription(`You have not entered any arguments, ${author}!`)
+      .setColor("ORANGE");
 
     if (command.usage) {
-      reply += `\nThe proper use is: \`${prefix}${command.name} ${command.usage}\``;
+      embed.addField("Usage", `The proper use is: \`${prefix}${command.name} ${command.usage}\``);
     }
 
-    return message.channel.send(reply);
+    return channel.send(embed);
   }
 
-  if (!cooldowns.has(command.name)) {
-    cooldowns.set(command.name, new Discord.Collection());
+  if (command.ownerOnly && author.id !== client.config.owner.id) {
+    return message.reply(`Only the owner of ${client.user} can use this command!`);
+  }
+
+  if (!client.cooldowns.has(command.name)) {
+    client.cooldowns.set(command.name, new Collection());
   }
 
   const now = Date.now();
-  const timestamps = cooldowns.get(command.name);
+  const timestamps = client.cooldowns.get(command.name);
   const cooldownAmount = (command.cooldown || 3) * 1000;
 
-  if (timestamps.has(message.author.id)) {
-    const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+  if (timestamps.has(author.id)) {
+    const expirationTime = timestamps.get(author.id) + cooldownAmount;
 
     if (now < expirationTime) {
       const timeLeft = (expirationTime - now) / 1000;
       return message.reply(
-        i18n.__mf("common.cooldownMessage", {
-          time: timeLeft.toFixed(1),
-          name: command.name,
-        })
+        `please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${
+          command.name
+        }\` command.`
       );
     }
   }
 
-  timestamps.set(message.author.id, now);
-  setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
+  timestamps.set(author.id, now);
+  setTimeout(() => timestamps.delete(author.id), cooldownAmount);
 
   try {
     command.callback(message, args, client);

@@ -1,23 +1,15 @@
 const { MessageEmbed: Embed } = require("discord.js");
-const db = require("megadb");
-let languages_db = new db.crearDB("languages");
-const i18n = require("i18n");
+
 module.exports = {
   name: "avatar",
   aliases: ["icon", "pfp"],
   description: "Get the avatar URL of tagged users or your own avatar.",
+  usage: "<@user> or none",
   group: "Utility",
   memberName: "Avatar",
-  usage: "<@user> or none",
-  cooldown: 3,
   guildOnly: true,
+  cooldown: 3,
   callback: async (message, args) => {
-    let lang = languages_db.has(message.guild.id)
-      ? await languages_db.get(`${message.guild.id}.language`)
-      : i18n.getLocale();
-
-    i18n.setLocale(lang);
-
     const member =
       message.mentions.members.last() || message.guild.members.cache.get(args[0]) || message.member;
 

@@ -1,25 +1,56 @@
-const { LOCALE } = require("../../util/LeoncitoUtil");
-const i18n = require("i18n");
-
-i18n.setLocale(LOCALE);
+require("../../Features/ExtendMessage"); //Inline Reply
+const { MessageEmbed: Embed } = require("discord.js");
 
 module.exports = {
   name: "volume",
-  description: i18n.__("volume.description"),
   aliases: ["vol", "v"],
-  usage: "[volume]",
+  description: "Change volume of currently playing music.",
   group: "Music",
   memberName: "Volume",
-  cooldown: 3,
+  usage: "[volume]",
   guildOnly: true,
+  cooldown: 3,
   callback: (message, args) => {
-    if (!message.member.voice)
-      return message.channel.send("I'm sorry but you need to be in a voice channel to play music!");
-    const serverQueue = message.client.queue.get(message.guild.id);
-    if (!serverQueue) return message.channel.send("There is nothing playing.");
-    if (!args[0]) return message.channel.send(`The current volume is: **${serverQueue.volume}%**`);
-    serverQueue.volume = args[0]; // eslint-disable-line
-    serverQueue.connection.dispatcher.setVolumeLogarithmic(args[0] / 80);
-    return message.channel.send(`I set the volume to: **${args[0]}%**`);
+    const { client, guild, channel, member } = message;
+    const serverQueue = client.queue.get(guild.id);
+    const voiceChannel = member.voice.channel;
+
+    if (!voiceChannel) {
+      return message.inlineReply(
+        new Embed().setDescription("You need to join a voice channel first!").setColor("RED")
+      );
+    }
+
+    if (serverQueue && voiceChannel !== guild.me.voice.channel) {
+      return message
+        .inlineReply(`You must be in the same channel as ${client.user}`)
+        .catch((error) => console.error(error));
+    }
+
+    if (!serverQueue) return message.inlineReply("There is nothing playing.");
+
+    if (!args.length)
+      return message.inlineReply(
+        new Embed().setDescription(`The current volume is: **${serverQueue.volume}%**`).setColor("BLUE")
+      );
+
+    const amount = parseInt(args[0]);
+    if (isNaN(amount)) {
+      return message.inlineReply(
+        new Embed().setDescription("That doesn't seem to be a number.").setColor("RED")
+      );
+    } else if (amount < 1 || amount > 100) {
+      return message.inlineReply(
+        new Embed().setDescription("Please enter a number between 1 and 100").setColor("ORANGE")
+      );
+    }
+
+    serverQueue.volume = amount; // eslint-disable-line
+    serverQueue.connection.dispatcher.setVolumeLogarithmic(serverQueue.volume / 100);
+    return channel
+      .send(
+        new Embed().setDescription(`I set the volume to: **${serverQueue.volume}%**`).setColor("GREEN")
+      )
+      .catch(console.error);
   },
 };

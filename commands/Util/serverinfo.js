@@ -1,20 +1,20 @@
-const Discord = require("discord.js");
+const { MessageEmbed: Embed } = require("discord.js");
 const moment = require("moment");
 
 const region = {
-  brazil: "Brazil :flag_br:",
-  europe: "Europe :flag_eu:",
-  india: "India :flag_in:",
-  japan: "Japan :flag_jp:",
-  singapore: "Singapore :flag_sg",
+  "brazil": "Brazil :flag_br:",
+  "europe": "Europe :flag_eu:",
+  "india": "India :flag_in:",
+  "japan": "Japan :flag_jp:",
+  "singapore": "Singapore :flag_sg:",
   "us-central": "US-Central :flag_us:",
   "us-east": "US-East :flag_us:",
-  "us-south": "US-South :flag_us",
+  "us-south": "US-South :flag_us:",
   "us-west": "US-West :flag_us:",
-  sydney: "Sydney :flag_au:",
-  hongkong: "Hong Kong :flag_hk:",
-  russia: "Russia :flag_ru:",
-  south_africa: "South Africa :flag_za:",
+  "sydney": "Sydney :flag_au:",
+  "hongkong": "Hong Kong :flag_hk:",
+  "russia": "Russia :flag_ru:",
+  "south_africa": "South Africa :flag_za:",
 };
 
 module.exports = {
@@ -23,9 +23,10 @@ module.exports = {
   description: "Displays information about the server.",
   group: "Utility",
   memberName: "Server info",
-  cooldown: 3,
   guildOnly: true,
+  cooldown: 3,
   callback: (message) => {
+    const { guild, channel } = message;
     const titleCase = (str) => {
       return str
         .toLowerCase()
@@ -35,39 +36,37 @@ module.exports = {
         .join();
     };
 
-    let members = message.guild.members.cache.filter((member) => !member.user.bot).size;
-    let onlineMembers = message.guild.members.cache
+    const members = guild.members.cache.filter((member) => !member.user.bot).size;
+    const onlineMembers = guild.members.cache
       .filter((member) => !member.user.bot)
       .filter((member) => member.presence.status !== "offline").size;
-    let bots = message.guild.members.cache.filter((member) => member.user.bot).size;
-    let onlineBots = message.guild.members.cache
+    const bots = guild.members.cache.filter((member) => member.user.bot).size;
+    const onlineBots = guild.members.cache
       .filter((member) => member.user.bot)
       .filter((member) => member.presence.status !== "offline").size;
-    let textChannels = message.guild.channels.cache.filter((chn) => chn.type === "text").size;
-    let voiceChannels = message.guild.channels.cache.filter((chn) => chn.type === "voice").size;
-    let categories = message.guild.channels.cache.filter((chn) => chn.type == "category").size;
-    let roleCount = message.guild.roles.cache.size - 1;
+    const textChannels = guild.channels.cache.filter((chn) => chn.type === "text").size;
+    const voiceChannels = guild.channels.cache.filter((chn) => chn.type === "voice").size;
+    const categories = guild.channels.cache.filter((chn) => chn.type == "category").size;
+    const roleCount = guild.roles.cache.size - 1;
 
-    let icon = message.guild.iconURL({ dynamic: true, size: 512 });
+    let icon = guild.iconURL({ dynamic: true, size: 512 });
     if (!icon) {
       icon = "https://i.imgur.com/AWGDmiu.png";
     }
 
-    const embed = new Discord.MessageEmbed()
-      .setAuthor(`${message.guild.name}`, icon)
-      .setDescription(
-        `${message.guild.name} was created on ${moment(message.guild.createdAt).format("MMMM DD/YYYY")}`
-      )
+    const embed = new Embed()
+      .setAuthor(`${guild.name}`, icon)
+      .setDescription(`${guild.name} was created on ${moment(guild.createdAt).format("MMMM DD/YYYY")}`)
       .setThumbnail(icon)
       .addFields(
         {
           name: "Region",
-          value: `${region[message.guild.region]}`,
+          value: `${region[guild.region]}`,
           inline: true,
         },
         {
           name: "Total Users/Bots",
-          value: `${message.guild.members.cache.size} Users/Bots`,
+          value: `${guild.members.cache.size} Users/Bots`,
           inline: true,
         },
         {
@@ -82,7 +81,7 @@ module.exports = {
         },
         {
           name: "Boosts",
-          value: `${message.guild.premiumSubscriptionCount} Boosts`,
+          value: `${guild.premiumSubscriptionCount} Boosts`,
           inline: true,
         },
         {
@@ -102,24 +101,24 @@ module.exports = {
         },
         {
           name: "Verification Level",
-          value: `${titleCase(message.guild.verificationLevel)}`,
+          value: `${titleCase(guild.verificationLevel)}`,
           inline: true,
         },
         {
           name: "AFK Timeout",
-          value: message.guild.afkChannel
-            ? `${moment.duration(message.guild.afkTimeout * 1000).asMinutes()} minute(s)`
+          value: guild.afkChannel
+            ? `${moment.duration(guild.afkTimeout * 1000).asMinutes()} minute(s)`
             : "None",
           inline: true,
         },
         {
           name: "AFK Channel",
-          value: message.guild.afkChannel ? `${message.guild.afkChannel.name}` : "None",
+          value: guild.afkChannel ? `${guild.afkChannel.name}` : "None",
           inline: true,
         },
         {
           name: "Explicit Content Filter",
-          value: `${titleCase(message.guild.explicitContentFilter)}`,
+          value: `${titleCase(guild.explicitContentFilter)}`,
           inline: true,
         },
         {
@@ -129,16 +128,16 @@ module.exports = {
         },
         {
           name: "Server Owner",
-          value: `[${message.guild.owner.user.tag}](https://dicord.com/users/${message.guild.owner.user.id} "https://discord.com/users/${message.guild.owner.user.id}")`,
+          value: `[${guild.owner.user.tag}](https://discord.com/users/${guild.owner.user.id} "https://discord.com/users/${guild.owner.user.id}")`,
           inline: true,
         },
         {
           name: "Server ID",
-          value: `${message.guild.id}`,
+          value: `${guild.id}`,
           inline: true,
         }
       );
 
-    message.channel.send(embed);
+    channel.send(embed);
   },
 };

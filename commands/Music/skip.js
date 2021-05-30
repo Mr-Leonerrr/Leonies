@@ -1,26 +1,39 @@
+require("../../Features/ExtendMessage"); //Inline Reply
+const { MessageEmbed: Embed } = require("discord.js");
+
 module.exports = {
   name: "skip",
-  description: "Skip a song.",
   aliases: ["sk"],
+  description: "Skip a song.",
   group: "Music",
   memberName: "Skip",
-  cooldown: 5,
   guildOnly: true,
+  cooldown: 5,
   callback: (message) => {
-    const serverQueue = message.client.queue.get(message.guild.id);
-    if (!message.member.voice.channel) {
-      return message.channel.send({
-        embed: {
-          title: "Really?",
-          description: "You are not in the voice channel!",
-          color: 16515072,
-        },
-      });
+    const { client, guild, member } = message;
+    const serverQueue = client.queue.get(guild.id);
+    const voiceChannel = member.voice.channel;
+
+    if (!voiceChannel) {
+      return message.inlineReply(
+        new Embed().setDescription("You need to join a voice channel first!").setColor("RED")
+      );
+    }
+
+    if (serverQueue && voiceChannel !== guild.me.voice.channel) {
+      return message
+        .inlineReply(
+          new Embed().setDescription(`You must be in the same channel as ${client.user}`).setColor("RED")
+        )
+        .catch((error) => console.error(error));
     }
 
     if (!serverQueue) {
-      return message.channel.send("There is no song that I could skip!");
+      return message.inlineReply(
+        new Embed().setDescription("There is nothing playing.").setColor("ORANGE")
+      );
     }
+
     message.react("⏭");
     serverQueue.connection.dispatcher.end();
   },
