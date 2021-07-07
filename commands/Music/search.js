@@ -1,6 +1,4 @@
-require("dotenv").config();
-require("../../Features/ExtendMessage"); //Inline Reply
-const { MessageEmbed: Embed } = require("discord.js");
+const { Message, MessageEmbed: Embed } = require("discord.js");
 const { YTSearcher } = require("ytsearcher");
 const youtube = new YTSearcher({ key: process.env.YOUTUBE_API, revealKey: true });
 const he = require("he");
@@ -15,6 +13,10 @@ module.exports = {
   args: true,
   guildOnly: true,
   cooldown: 3,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: async (message, args) => {
     const { client, guild, channel, member } = message;
     const serverQueue = client.queue.get(guild.id);
@@ -38,7 +40,9 @@ module.exports = {
     if (serverQueue && voiceChannel !== guild.me.voice.channel) {
       return message
         .inlineReply(
-          new Embed().setDescription(`You must be in the same channel as ${client.user}`).setColor("RED")
+          new Embed()
+            .setDescription(`You must be in the same channel as ${client.user}`)
+            .setColor("RED")
         )
         .catch((error) => console.error(error));
     }
@@ -93,7 +97,9 @@ module.exports = {
       channel.activeCollector = false;
       resultsMessage.delete().catch((error) => console.error(error));
       message.inlineReply(
-        new Embed().setDescription("No answer after 30 seconds, operation canceled.").setColor("ORANGE")
+        new Embed()
+          .setDescription("No answer after 30 seconds, operation canceled.")
+          .setColor("ORANGE")
       );
     }
   },

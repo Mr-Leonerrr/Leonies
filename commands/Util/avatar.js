@@ -1,4 +1,4 @@
-const { MessageEmbed: Embed } = require("discord.js");
+const { Message, MessageEmbed: Embed } = require("discord.js");
 
 module.exports = {
   name: "avatar",
@@ -9,9 +9,15 @@ module.exports = {
   memberName: "Avatar",
   guildOnly: true,
   cooldown: 3,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: async (message, args) => {
     const member =
-      message.mentions.members.last() || message.guild.members.cache.get(args[0]) || message.member;
+      message.mentions.members.last() ||
+      message.guild.members.cache.get(args[0]) ||
+      message.member;
 
     let userInfo = {};
     userInfo.tag = member.tag;

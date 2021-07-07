@@ -1,5 +1,4 @@
-require("../../Features/ExtendMessage"); //Inline Reply
-const { MessageEmbed: Embed } = require("discord.js");
+const { MessageEmbed: Embed, Message } = require("discord.js");
 const db = require("megadb");
 let prefix_db = new db.crearDB("prefixes");
 
@@ -12,13 +11,19 @@ module.exports = {
   memberName: "Prefix",
   guildOnly: true,
   cooldown: 3,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: async (message, args) => {
     const newPrefix = args.join(" ");
     const { client, guild, channel, member } = message;
     if (!member.hasPermission("ADMINISTRATOR")) {
-      return message.inlineReply("You don't have permissions to use this command!").then((msg) => {
-        msg.delete({ timeout: 3000 });
-      });
+      return message
+        .inlineReply("You don't have permissions to use this command!")
+        .then((msg) => {
+          msg.delete({ timeout: 3000 });
+        });
     }
 
     if (!newPrefix && prefix_db.has(`${guild.id}`)) {

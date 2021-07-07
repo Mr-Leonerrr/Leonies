@@ -1,4 +1,4 @@
-const { Util } = require("discord.js");
+const { Util, Message } = require("discord.js");
 
 module.exports = {
   name: "say",
@@ -6,9 +6,14 @@ module.exports = {
   usage: "<your message>",
   group: "Fun",
   memberName: "Say",
+  clientPerms: ["MANAGE_MESSAGES"],
   args: true,
   guildOnly: true,
   cooldown: 5,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: (message, args) => {
     message.channel.send(Util.removeMentions(args.join(" ")));
     message.delete();

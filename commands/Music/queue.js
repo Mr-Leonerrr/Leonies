@@ -1,5 +1,4 @@
-require("../../Features/ExtendMessage"); //Inline Reply
-const { MessageEmbed: Embed } = require("discord.js");
+const { Message, MessageEmbed: Embed } = require("discord.js");
 
 module.exports = {
   name: "queue",
@@ -9,6 +8,9 @@ module.exports = {
   memberName: "Queue",
   guildOnly: true,
   cooldown: 3,
+  /**
+   * @param {Message} message
+   */
   callback: async (message) => {
     const { client, guild, channel, member } = message;
     const serverQueue = client.queue.get(guild.id);
@@ -28,7 +30,7 @@ module.exports = {
     if (!serverQueue) return message.inlineReply("There is nothing playing.");
 
     if (serverQueue.songs.length === 1) {
-      return message.inlineReply("`0` Songs waiting in the queue.");
+      return client.commands.get("nowplaying").callback(message);
     }
 
     let currentPage = 0;
@@ -59,12 +61,18 @@ module.exports = {
         if (reaction.emoji.name === "➡️") {
           if (currentPage < embeds.length - 1) {
             currentPage++;
-            queueEmbed.edit(`Current Page - ${currentPage + 1}/${embeds.length}`, embeds[currentPage]);
+            queueEmbed.edit(
+              `Current Page - ${currentPage + 1}/${embeds.length}`,
+              embeds[currentPage]
+            );
           }
         } else if (reaction.emoji.name === "⬅️") {
           if (currentPage !== 0) {
             --currentPage;
-            queueEmbed.edit(`Current Page - ${currentPage + 1}/${embeds.length}`, embed[currentPage]);
+            queueEmbed.edit(
+              `Current Page - ${currentPage + 1}/${embeds.length}`,
+              embed[currentPage]
+            );
           }
         } else {
           collector.stop();

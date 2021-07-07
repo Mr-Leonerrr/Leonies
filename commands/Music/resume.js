@@ -1,5 +1,4 @@
-require("../../Features/ExtendMessage"); //Inline Reply
-const { MessageEmbed: Embed } = require("discord.js");
+const { Message, MessageEmbed: Embed } = require("discord.js");
 
 module.exports = {
   name: "resume",
@@ -9,6 +8,9 @@ module.exports = {
   memberName: "Resume",
   guildOnly: true,
   cooldown: 5,
+  /**
+   * @param {Message} message
+   */
   callback: (message) => {
     const { client, guild, member } = message;
     const serverQueue = client.queue.get(guild.id);

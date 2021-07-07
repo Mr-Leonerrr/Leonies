@@ -1,5 +1,4 @@
-require("../../Features/ExtendMessage"); //Inline Reply
-const { MessageEmbed: Embed } = require("discord.js");
+const { Message, MessageEmbed: Embed } = require("discord.js");
 
 module.exports = {
   name: "volume",
@@ -10,6 +9,10 @@ module.exports = {
   usage: "[volume]",
   guildOnly: true,
   cooldown: 3,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: (message, args) => {
     const { client, guild, channel, member } = message;
     const serverQueue = client.queue.get(guild.id);
@@ -31,7 +34,9 @@ module.exports = {
 
     if (!args.length)
       return message.inlineReply(
-        new Embed().setDescription(`The current volume is: **${serverQueue.volume}%**`).setColor("BLUE")
+        new Embed()
+          .setDescription(`The current volume is: **${serverQueue.volume}%**`)
+          .setColor("BLUE")
       );
 
     const amount = parseInt(args[0]);
@@ -49,7 +54,9 @@ module.exports = {
     serverQueue.connection.dispatcher.setVolumeLogarithmic(serverQueue.volume / 100);
     return channel
       .send(
-        new Embed().setDescription(`I set the volume to: **${serverQueue.volume}%**`).setColor("GREEN")
+        new Embed()
+          .setDescription(`I set the volume to: **${serverQueue.volume}%**`)
+          .setColor("GREEN")
       )
       .catch(console.error);
   },

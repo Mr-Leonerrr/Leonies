@@ -1,4 +1,4 @@
-const { MessageEmbed: Embed } = require("discord.js");
+const { Message, MessageEmbed: Embed } = require("discord.js");
 const moment = require("moment");
 
 const region = {
@@ -25,6 +25,9 @@ module.exports = {
   memberName: "Server info",
   guildOnly: true,
   cooldown: 3,
+  /**
+   * @param {Message} message
+   */
   callback: (message) => {
     const { guild, channel } = message;
     const titleCase = (str) => {
@@ -56,7 +59,9 @@ module.exports = {
 
     const embed = new Embed()
       .setAuthor(`${guild.name}`, icon)
-      .setDescription(`${guild.name} was created on ${moment(guild.createdAt).format("MMMM DD/YYYY")}`)
+      .setDescription(
+        `${guild.name} was created on ${moment(guild.createdAt).format("MMMM DD/YYYY")}`
+      )
       .setThumbnail(icon)
       .addFields(
         {

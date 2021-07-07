@@ -1,4 +1,4 @@
-const { MessageEmbed: Embed, splitMessage } = require("discord.js");
+const { Message, MessageEmbed: Embed, splitMessage } = require("discord.js");
 const { getSong, getLyrics, searchSong } = require("genius-lyrics-api");
 
 module.exports = {
@@ -9,13 +9,19 @@ module.exports = {
   memberName: "Lyrics",
   guildOnly: true,
   cooldown: 4,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: (message, args) => {
     const { client, guild, channel, member } = message;
     const serverQueue = client.queue.get(guild.id);
     const voiceChannel = member.voice.channel;
     if (serverQueue && voiceChannel !== guild.me.voice.channel) {
       return message.inlineReply(
-        new Embed().setDescription(`You must be in the same channel as ${client.user}`).setColor("RED")
+        new Embed()
+          .setDescription(`You must be in the same channel as ${client.user}`)
+          .setColor("RED")
       );
     }
 
@@ -44,7 +50,9 @@ module.exports = {
       getSong(options).then((data) => {
         if (data == null)
           return channel.send(
-            new Embed().setDescription("I couldn't find this song 🙁").setColor(guild.me.displayHexColor)
+            new Embed()
+              .setDescription("I couldn't find this song 🙁")
+              .setColor(guild.me.displayHexColor)
           );
         searchSong(options).then((song) => {
           getLyrics(data.url).then((lyrics) => {

@@ -1,4 +1,4 @@
-const { MessageEmbed: Embed } = require("discord.js");
+const { Message, MessageEmbed: Embed } = require("discord.js");
 
 module.exports = {
   name: "invite",
@@ -7,6 +7,9 @@ module.exports = {
   group: "Utility",
   memberName: "Invite",
   cooldown: 2,
+  /**
+   * @param {Message} message
+   */
   callback: (message) => {
     const { client } = message;
     message.channel.send(
@@ -20,7 +23,7 @@ module.exports = {
             value: `[Click here](${client.invite})`,
           },
           {
-            name: "Official Server",
+            name: "Support Server",
             value: `[Click here](${client.config.support.invite})`,
           }
         )

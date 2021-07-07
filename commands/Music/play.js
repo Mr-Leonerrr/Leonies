@@ -1,10 +1,9 @@
-require("../../Features/ExtendMessage"); //Inline Reply
-const { MessageEmbed: Embed } = require("discord.js");
+const { Message, MessageEmbed: Embed } = require("discord.js");
 const { play } = require("../../include/play");
 const { playlist } = require("../../include/playlist");
 const ytdl = require("discord-ytdl-core");
-const YoutubeAPI = require("simple-youtube-api");
-const youtube = new YoutubeAPI(process.env.YOUTUBE_API);
+const { YTSearcher } = require("ytsearcher");
+const youtube = new YTSearcher({ key: process.env.YOUTUBE_API, revealKey: true });
 const { timeFormat, createQuery } = require("../../Features/musicFunctions");
 
 module.exports = {
@@ -17,6 +16,10 @@ module.exports = {
   args: true,
   guildOnly: true,
   cooldown: 3,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: async (message, args) => {
     const { client, guild, channel, member } = message;
     const serverQueue = client.queue.get(guild.id);
@@ -105,8 +108,14 @@ module.exports = {
       }
     } else {
       try {
-        const results = await youtube.searchVideos(search, 1, { part: "snippet" });
-        songInfo = await ytdl.getInfo(results[0].url);
+        const results = await youtube.search(search, { part: "video" });
+        if (results.first === null) {
+          return message.inlineReply(
+            new Embed().setDescription("No results found.").setColor("ORANGE")
+          );
+        }
+
+        songInfo = await ytdl.getInfo(results.first.url);
         const getInfo = createQuery(songInfo.videoDetails.title);
         let thumbnail;
         if (songInfo.videoDetails.thumbnails[4] == undefined)
@@ -153,7 +162,9 @@ module.exports = {
       await voiceChannel.leave();
       return channel
         .send(
-          new Embed().setDescription(`I Couldn't join to the voice channel: ${error}`).setColor("RED")
+          new Embed()
+            .setDescription(`I Couldn't join to the voice channel: ${error}`)
+            .setColor("RED")
         )
         .catch((error) => console.error(error));
     }

@@ -1,9 +1,20 @@
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S33RM7Z)
-
 # 🦁 Leonies
 
-> Leonies is a Discord Music Bot equipped with the basics for moderation, fun and entertainment built
-> with [discord.js](https://discord.js.org/#/docs/)
+<p>
+  <img alt="Version" src="https://img.shields.io/github/v/tag/Mr-Leonerrr/Leonies?label=Last%20Release&style=for-the-badge" />
+  <a href="https://github.com/Mr-Leonerrr/Leonies#readme" target="_blank">
+    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
+  </a>
+    <a href="https://github.com/Mr-Leonerrr/Leonies/blob/master/LICENSE" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/github/license/Mr-Leonerrr/Leonies" />
+  </a>
+  <a href="https://github.com/Mr-Leonerrr/Leonies/graphs/commit-activity" target="_blank">
+    <img alt="Maintenance" src="https://img.shields.io/maintenance/yes/2021?color=6A0CED&style=for-the-badge" />
+  </a>
+</p>
+
+> Leonies is a Discord Music Bot equipped with the basics for moderation, fun and entertainment
+> built with [discord.js](https://discord.js.org/#/docs/)
 
 # Requirements
 
@@ -48,20 +59,22 @@ In the file called `config.json` replace the values according to your criteria
 
 • 🎵 Play music from Youtube via URL <br/> `;play https://youtu.be/0CNPR2qNzxk`
 
-• 🔎 Search music from Youtube via search query <br/> `;play Welcome to the jungle guns and rouses`
+• 🔎 Search music from Youtube via search query <br/>
+`;play Welcome to the jungle guns and rouses`
 
 • 🔎 Play Youtube playlists via URL <br/>
 `;play https://www.youtube.com/playlist?list=PLofmCZWRdOtl1dM2XQPx2_8KxveP6KbTt`
 
-• Now Playing `;np` <br/> • Queue `;queue` or `;q`<br/> • Loop / Repeat `;loop`, `;lp` <br/> • Volume
-control `;volume`, `;vol` <br/> • Lyrics `;lyrics`, `;ly` <br/> • Pause `;pause` <br/> • Resume
-`;resume`, `;r`, `;continue` <br/> • Stop and clear the queue `;stop`, `;sp` <br/> • Skip `;skip`, `;sk`
-<br/> • Remove `;remove`, `;rm` <br/> • Show API ping `;ping` <br/> • Help `;help` `;commands`
+• Now Playing `;np` <br/> • Queue `;queue` or `;q`<br/> • Loop / Repeat `;loop`, `;lp` <br/> •
+Volume control `;volume`, `;vol` <br/> • Lyrics `;lyrics`, `;ly` <br/> • Pause `;pause` <br/> •
+Resume `;resume`, `;r`, `;continue` <br/> • Stop and clear the queue `;stop`, `;sp` <br/> • Skip
+`;skip`, `;sk` <br/> • Remove `;remove`, `;rm` <br/> • Show API ping `;ping` <br/> • Help `;help`
+`;commands`
 
 # 📬 Support
 
-• Message me on discord: [Leoner#1111](https://discord.com/users/445403516970729482) <br/> • Join the
-[discord server](https://discord.gg/uJguFNpkWU) <br/> • Create a issue on the
+• Message me on discord: [Leoner#1603](https://discord.com/users/445403516970729482) <br/> • Join
+the [discord server](https://discord.gg/uJguFNpkWU) <br/> • Create a issue on the
 [github](https://github.com/Mr-Leonerrr/Leonies/issues)
 
 # 🤝 Contributing

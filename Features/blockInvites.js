@@ -6,10 +6,13 @@ module.exports = {
     const regex =
       /(https?:\/\/)?(www\.)?(discord\.(gg|io|me|li|club)|discordapp\.com\/invite|discord\.com\/invite|dsc\.gg)\/.+[a-z]/gi;
 
-    if (member.hasPermission("MANAGE_MESSAGES") || member.hasPermission("ADMINISTRATOR")) return;
+    if (member.hasPermission("MANAGE_MESSAGES") || member.hasPermission("ADMINISTRATOR"))
+      return;
     else if (regex.test(content)) {
-      await channel.send(new Embed().setDescription(`${member.user} 🤡 Nice ads try!`).setColor("RED"));
-      await message.delete();
+      message.delete();
+      channel.send(
+        new Embed().setDescription(`${member.user} 🤡 Nice ads try!`).setColor("RED")
+      );
       return;
     }
   },

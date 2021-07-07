@@ -1,7 +1,11 @@
-const { MessageEmbed: Embed, Collection } = require("discord.js");
+const { Client, Message, MessageEmbed: Embed, Collection } = require("discord.js");
 const db = require("megadb");
 let prefix_db = new db.crearDB("prefixes");
 
+/**
+ * @param {Client} client
+ * @param {Message} message
+ */
 module.exports = async (client, message) => {
   if (message.author.bot) return;
 
@@ -26,6 +30,9 @@ module.exports = async (client, message) => {
 
   if (!content.toLowerCase().startsWith(prefix)) return;
 
+  /**
+   * @type {String[]}
+   */
   const args = content.slice(prefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
 
@@ -37,6 +44,15 @@ module.exports = async (client, message) => {
 
   if (command.guildOnly && channel.type === "dm") {
     return message.reply("Can't run this command on private messages!");
+  }
+
+  if (command.clientPerms && !guild.me.permissions.has(command.clientPerms)) {
+    const embed = new Embed()
+      .setTitle(":no_entry: Permissions missing")
+      .setDescription(
+        `I need the following permissions to run this command\n${command.clientPerms.join(", ")}`
+      );
+    return channel.send(embed);
   }
 
   if (command.args && !args.length) {
@@ -53,6 +69,10 @@ module.exports = async (client, message) => {
 
   if (command.ownerOnly && author.id !== client.config.owner.id) {
     return message.reply(`Only the owner of ${client.user} can use this command!`);
+  }
+
+  if (command.support && guild.id !== client.config.support.id) {
+    return message.reply("This is a dedicated guild command!");
   }
 
   if (!client.cooldowns.has(command.name)) {

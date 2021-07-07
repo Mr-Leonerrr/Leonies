@@ -1,4 +1,4 @@
-const { MessageEmbed: Embed } = require("discord.js");
+const { MessageEmbed: Embed, Message } = require("discord.js");
 
 const answers = [
   "Yes.",
@@ -24,13 +24,18 @@ module.exports = {
   usage: "<question>",
   group: "Fun",
   memberName: "8 Ball",
+  clientPerms: ["MANAGE_MESSAGES"],
   args: true,
   guildOnly: true,
   cooldown: 3,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: async (message, args) => {
     const { channel, author } = message;
     if (!args.length) {
-      return await message.delete().then(() => {
+      return message.delete().then(() => {
         channel.send("Please ask a full question.");
       });
     }

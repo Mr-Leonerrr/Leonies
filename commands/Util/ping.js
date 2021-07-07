@@ -1,4 +1,4 @@
-const { MessageEmbed: Embed } = require("discord.js");
+const { Message, MessageEmbed: Embed } = require("discord.js");
 
 module.exports = {
   name: "ping",
@@ -6,6 +6,9 @@ module.exports = {
   group: "Utility",
   memberName: "Ping",
   cooldown: 5,
+  /**
+   * @param {Message} message
+   */
   callback: (message) => {
     message.channel.send(
       new Embed()

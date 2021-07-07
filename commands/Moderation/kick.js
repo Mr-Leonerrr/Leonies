@@ -1,4 +1,3 @@
-require("../../Features/ExtendMessage"); //Inline Reply
 const { MessageEmbed: Embed } = require("discord.js");
 
 module.exports = {
@@ -8,6 +7,7 @@ module.exports = {
   usage: "<@member | member-id> [reason]",
   group: "Moderation",
   memberName: "Kick",
+  clientPerms: ["KICK_MEMBERS"],
   args: true,
   guildOnly: true,
   cooldown: 5,
@@ -16,10 +16,6 @@ module.exports = {
 
     if (!member.hasPermission("KICK_MEMBERS") || !member.hasPermission("ADMINISTRATOR")) {
       return message.inlineReply("You don't have permissions for kick this user!");
-    }
-
-    if (!guild.me.hasPermission("KICK_MEMBERS")) {
-      return message.inlineReply("I don't have permissions for this!");
     }
 
     const target = mentions.members.first() || guild.members.cache.get(args[0]);

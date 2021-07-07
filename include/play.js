@@ -24,6 +24,7 @@ module.exports = {
     }
 
     let stream = null;
+    let streamType = song.url.includes("youtube.com") ? "opus" : "ogg/opus";
 
     try {
       if (song.url.includes("youtube.com")) {

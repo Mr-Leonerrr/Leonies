@@ -1,4 +1,4 @@
-const { MessageEmbed: Embed } = require("discord.js");
+const { Message, MessageEmbed: Embed } = require("discord.js");
 const db = require("megadb");
 let prefix_db = new db.crearDB("prefixes");
 
@@ -10,6 +10,10 @@ module.exports = {
   memberName: "Help",
   usage: "<command name>",
   cooldown: 5,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: async (message, args) => {
     const { client, guild, channel } = message;
     const funCommands = [],
@@ -47,7 +51,9 @@ module.exports = {
           { name: "🎱 Utility", value: utilCommands.join(", ") },
           { name: "😵 Fun", value: funCommands.join(", ") }
         )
-        .setFooter(`You can send ${prefix}help [command name] to get info on a specific command.`);
+        .setFooter(
+          `You can send ${prefix}help [command name] to get info on a specific command.`
+        );
 
       return channel.send(commandsPage);
     }

@@ -1,5 +1,4 @@
-require("../../Features/ExtendMessage"); //Inline Reply
-const { MessageEmbed: Embed } = require("discord.js");
+const { MessageEmbed: Embed, Message } = require("discord.js");
 
 module.exports = {
   name: "clear",
@@ -8,9 +7,14 @@ module.exports = {
   usage: "<number of messages>",
   group: "Moderation",
   memberName: "Clear",
+  clientPerms: ["MANAGE_MESSAGES"],
   args: true,
   guildOnly: true,
   cooldown: 3,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: async (message, args) => {
     if (!message.member.hasPermission("MANAGE_MESSAGES")) {
       return message
@@ -44,7 +48,9 @@ module.exports = {
         })
         .catch((error) => {
           console.error(error);
-          message.channel.send("An error occurred while trying to delete messages from this channel!");
+          message.channel.send(
+            "An error occurred while trying to delete messages from this channel!"
+          );
         });
     }
   },

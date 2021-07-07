@@ -1,5 +1,4 @@
-require("../../Features/ExtendMessage"); //Inline Reply
-const { MessageEmbed: Embed } = require("discord.js");
+const { MessageEmbed: Embed, Message } = require("discord.js");
 
 module.exports = {
   name: "ban",
@@ -8,9 +7,14 @@ module.exports = {
   usage: "<member> [reason]",
   group: "Moderation",
   memberName: "Ban",
+  clientPerms: ["BAN_MEMBERS"],
   args: true,
   guildOnly: true,
   cooldown: 5,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: (message, args) => {
     const { guild, channel, member, author } = message;
 
@@ -18,11 +22,7 @@ module.exports = {
       return message.inlineReply("You don't have permissions for kick this user!");
     }
 
-    if (!guild.me.hasPermission("BAN_MEMBERS")) {
-      return message.inlineReply("I don't have permissions for this!");
-    }
-
-    const target = guild.members.cache.get(args[0]);
+    const target = mentions.members.first() || guild.members.cache.get(args[0]);
 
     if (!target) {
       return message.inlineReply("You need an ID to ban!");

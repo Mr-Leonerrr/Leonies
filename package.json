@@ -13,10 +13,10 @@
   "author": "Mr-Leonerrr",
   "license": "MIT",
   "dependencies": {
-    "discord-ytdl-core": "^5.0.3",
+    "discord-ytdl-core": "^5.0.4",
     "discord.js": "^12.5.3",
     "dotenv": "^10.0.0",
-    "ffmpeg-static": "^4.3.0",
+    "ffmpeg-static": "^4.4.0",
     "genius-lyrics-api": "^3.0.6",
     "get-artist-title": "^1.3.1",
     "he": "^1.2.0",
@@ -26,7 +26,7 @@
     "node-fetch": "^2.6.1",
     "opusscript": "^0.0.8",
     "simple-youtube-api": "^5.2.1",
-    "ytdl-core": "^4.8.2",
+    "ytdl-core": "^4.8.3",
     "ytpl": "^2.2.1",
     "ytsearcher": "^1.2.4"
   },

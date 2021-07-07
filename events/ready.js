@@ -1,3 +1,8 @@
+const { Client } = require("discord.js");
+
+/**
+ * @param {Client} client
+ */
 module.exports = async (client) => {
   const activities = [
     `${client.config.prefix}help`,

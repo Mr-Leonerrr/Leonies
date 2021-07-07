@@ -1,5 +1,4 @@
-require("../../Features/ExtendMessage"); //Inline Reply
-const { MessageEmbed: Embed } = require("discord.js");
+const { Message, MessageEmbed: Embed } = require("discord.js");
 const db = require("megadb");
 let prefix_db = new db.crearDB("prefixes");
 
@@ -13,6 +12,10 @@ module.exports = {
   args: true,
   guildOnly: true,
   cooldown: 3,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: async (message, args) => {
     const { client, guild, member } = message;
     const serverQueue = client.queue.get(guild.id);
@@ -30,7 +33,9 @@ module.exports = {
     if (serverQueue && voiceChannel !== guild.me.voice.channel) {
       return message
         .inlineReply(
-          new Embed().setDescription(`You must be in the same channel as ${client.user}`).setColor("RED")
+          new Embed()
+            .setDescription(`You must be in the same channel as ${client.user}`)
+            .setColor("RED")
         )
         .catch((error) => console.error(error));
     }
@@ -63,7 +68,9 @@ module.exports = {
     const songToRemove = serverQueue.songs.pop(position);
     serverQueue.txtChannel.send(
       new Embed()
-        .setDescription(`${message.author} ❌ removed **${songToRemove.fullTitle}** from the queue.`)
+        .setDescription(
+          `${message.author} ❌ removed **${songToRemove.fullTitle}** from the queue.`
+        )
         .setColor("ORANGE")
     );
   },

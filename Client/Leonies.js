@@ -1,7 +1,4 @@
-require("dotenv").config();
-
 const { Client, Collection } = require("discord.js");
-
 class Leonies extends Client {
   constructor(options) {
     super(options);
@@ -16,8 +13,8 @@ class Leonies extends Client {
 
   async init() {
     this.login(process.env.TOKEN);
-    require("../Functions/Commands").run(this);
-    require("../Functions/Events").run(this);
+    require("../Functions/commands").run(this);
+    require("../Functions/loadEvents").run(this);
   }
 }
 

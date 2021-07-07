@@ -1,3 +1,4 @@
+const { Message } = require("discord.js");
 const fs = require("fs");
 
 module.exports = {
@@ -10,6 +11,10 @@ module.exports = {
   args: true,
   ownerOnly: true,
   cooldown: 5,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: async (message, args) => {
     const { client, channel, author } = message;
     const commandName = args[0].toLowerCase();

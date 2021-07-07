@@ -1,5 +1,4 @@
-require("../../Features/ExtendMessage"); //Inline Reply
-const { MessageEmbed: Embed } = require("discord.js");
+const { MessageEmbed: Embed, Message } = require("discord.js");
 
 module.exports = {
   name: "loop",
@@ -10,6 +9,10 @@ module.exports = {
   memberName: "Loop",
   guildOnly: true,
   cooldown: 3,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: (message, args) => {
     const { client, guild, member } = message;
     const serverQueue = client.queue.get(guild.id);
@@ -23,7 +26,9 @@ module.exports = {
     if (serverQueue && voiceChannel !== guild.me.voice.channel) {
       return message
         .inlineReply(
-          new Embed().setDescription(`You must be in the same channel as ${client.user}`).setColor("RED")
+          new Embed()
+            .setDescription(`You must be in the same channel as ${client.user}`)
+            .setColor("RED")
         )
         .catch((error) => console.error(error));
     }

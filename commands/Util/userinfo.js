@@ -1,4 +1,4 @@
-const { MessageEmbed: Embed } = require("discord.js");
+const { Message, MessageEmbed: Embed } = require("discord.js");
 const moment = require("moment");
 
 const DEVICES = { web: "🌐", desktop: "💻", mobile: "📱" };
@@ -12,6 +12,10 @@ module.exports = {
   memberName: "User Info",
   guildOnly: true,
   cooldown: 3,
+  /**
+   * @param {Message} message
+   * @param {String[]} args
+   */
   callback: (message, args) => {
     const { client, guild, channel, mentions } = message;
     //Change the id of emoji depending on whether you have them on your server or somewhere else where the bot has joined.
@@ -142,7 +146,9 @@ module.exports = {
         { name: "User ID", value: `${member.user.id}`, inline: true },
         {
           name: "Highest Role",
-          value: `${member.roles.highest.id === message.guild.id ? "None" : member.roles.highest}`,
+          value: `${
+            member.roles.highest.id === message.guild.id ? "None" : member.roles.highest
+          }`,
           inline: true,
         },
         {
