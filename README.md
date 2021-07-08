@@ -2,14 +2,14 @@
 
 <p>
   <img alt="Version" src="https://img.shields.io/github/v/tag/Mr-Leonerrr/Leonies?label=Last%20Release&style=for-the-badge" />
-  <a href="https://github.com/Mr-Leonerrr/Leonies#readme" target="_blank">
-    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
+  <a href="https://github.com/Mr-Leonerrr/Leonies#readme">
+    <img alt="Documentation" src="https://readthedocs.org/projects/pip/badge/?version=latest&style=for-the-badge" />
   </a>
     <a href="https://github.com/Mr-Leonerrr/Leonies/blob/master/LICENSE" target="_blank">
-    <img alt="License: MIT" src="https://img.shields.io/github/license/Mr-Leonerrr/Leonies" />
+    <img alt="License: MIT" src="https://img.shields.io/github/license/Mr-Leonerrr/Leonies?style=for-the-badge" />
   </a>
   <a href="https://github.com/Mr-Leonerrr/Leonies/graphs/commit-activity" target="_blank">
-    <img alt="Maintenance" src="https://img.shields.io/maintenance/yes/2021?color=6A0CED&style=for-the-badge" />
+    <img alt="Maintenance" src="https://img.shields.io/maintenance/yes/2021?style=for-the-badge" />
   </a>
 </p>
 
