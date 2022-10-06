@@ -23,7 +23,7 @@
     "megadb": "^3.4.0",
     "merge-options": "^3.0.4",
     "moment": "^2.29.1",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "opusscript": "^0.0.8",
     "simple-youtube-api": "^5.2.1",
     "ytdl-core": "^4.8.3",
