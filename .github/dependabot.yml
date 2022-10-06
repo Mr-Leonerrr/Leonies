@@ -12,5 +12,6 @@ updates:
       prefix: "npm"
     labels:
       - "dependencies"
+      - "dependabot"
     reviewers:
       - "Mr-Leonerrr"
