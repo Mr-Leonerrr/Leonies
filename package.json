@@ -23,7 +23,7 @@
     "glob": "^7.2.0",
     "he": "^1.2.0",
     "libsodium": "^0.7.9",
-    "libsodium-wrappers": "^0.7.9",
+    "libsodium-wrappers": "^0.7.10",
     "megadb": "^3.4.0",
     "merge-options": "^3.0.4",
     "moment": "^2.29.1",
