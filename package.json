@@ -30,7 +30,7 @@
     "node-fetch": "^3.2.10",
     "opusscript": "^0.0.8",
     "simple-youtube-api": "^5.2.1",
-    "spotify-url-info": "^2.2.3",
+    "spotify-url-info": "^3.1.9",
     "util": "^0.12.4",
     "youtube-sr": "^4.1.7",
     "ytdl-core": "^4.9.1",
