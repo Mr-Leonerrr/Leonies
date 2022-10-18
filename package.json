@@ -31,7 +31,7 @@
     "opusscript": "^0.0.8",
     "simple-youtube-api": "^5.2.1",
     "spotify-url-info": "^3.1.9",
-    "util": "^0.12.4",
+    "util": "^0.12.5",
     "youtube-sr": "^4.3.4",
     "ytdl-core": "^4.9.1",
     "ytpl": "^2.2.1"
