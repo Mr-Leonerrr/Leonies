@@ -34,7 +34,7 @@
     "util": "^0.12.5",
     "youtube-sr": "^4.3.4",
     "ytdl-core": "^4.11.2",
-    "ytpl": "^2.2.1"
+    "ytpl": "^2.3.0"
   },
   "devDependencies": {
     "dotenv": "^16.0.3",
