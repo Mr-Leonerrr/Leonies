@@ -33,7 +33,7 @@
     "spotify-url-info": "^3.1.9",
     "util": "^0.12.5",
     "youtube-sr": "^4.3.4",
-    "ytdl-core": "^4.9.1",
+    "ytdl-core": "^4.11.2",
     "ytpl": "^2.2.1"
   },
   "devDependencies": {
