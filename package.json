@@ -22,7 +22,7 @@
     "get-artist-title": "^1.3.1",
     "glob": "^8.0.3",
     "he": "^1.2.0",
-    "libsodium": "^0.7.9",
+    "libsodium": "^0.7.10",
     "libsodium-wrappers": "^0.7.10",
     "megadb": "^3.4.0",
     "merge-options": "^3.0.4",
