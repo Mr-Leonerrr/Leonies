@@ -1,3 +1,11 @@
+----  
+# ⚠️ Deprecated Warning
+This version of the code is intended to work with discord.js v12.x.  
+Currently, the package is at v14.x. If you wish to continue using this module, please note this requirement.  
+We will be working on a new version to use the latest versions of discord.js.
+
+----  
+
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S33RM7Z)
 
 # 🦁 Leonies
